@@ -23,9 +23,9 @@ def init():
 def initGame():
     global gSnakeList, gSnakeGroup
     
-    snakeOne = Snake(BLACK)
+    snakeOne = Snake(BLACK, GREEN)
     snakeOne.setImage(SOURCE_FOLDER + "/img/head.gif")
-    snakeTwo = Snake(RED)
+    snakeTwo = Snake(RED, RED)
     gSnakeGroup = pygame.sprite.Group()
     gSnakeGroup.add(snakeOne, snakeTwo)
     gSnakeList = [snakeOne, snakeTwo]

@@ -14,7 +14,7 @@ class Snake(pygame.sprite.Sprite):
     # Class variable. Kind of like static variables in C++
     snake_id = 0
 
-    def __init__(self, color = RED, width = SNAKE_SIZE, height = SNAKE_SIZE):
+    def __init__(self, color = RED, tailColor = RED, width = SNAKE_SIZE, height = SNAKE_SIZE):
         super(Snake, self).__init__()
         
         self.id = Snake.snake_id
@@ -32,6 +32,7 @@ class Snake(pygame.sprite.Sprite):
         self.turnSpeed = 0
         self.moveSpeed = 5
         
+        self.tailColor = tailColor
         self.tailNodes = []
         self.trailGroup = pygame.sprite.Group()
         
@@ -59,7 +60,7 @@ class Snake(pygame.sprite.Sprite):
     def move(self):
         self.angle += self.turnSpeed
         # pygame.transform.rotate(self.image, self.angle) Figure out a way to rotate the head to self.forward's direction
-        self.tailNodes.append(TailNode(self.rect.x, self.rect.y))
+        self.tailNodes.append(TailNode(self.rect.x, self.rect.y, self.tailColor))
         self.trailGroup.add(self.tailNodes[len(self.tailNodes) - 1])
         self.setPos(int(round(self.rect.x + (self.forward['x'] * self.moveSpeed))), int(round(self.rect.y - (self.forward['y'] * self.moveSpeed))))
         
