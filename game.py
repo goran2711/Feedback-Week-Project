@@ -83,13 +83,13 @@ def gameUpdate():
                     
             ## PLAYER TWO ######################
             if event.key == pygame.K_a:
-                if pygame.key.getPressed()[pygame.K_d]:
+                if pygame.key.get_pressed()[pygame.K_d]:
                     gSnakeList[PLAYER_TWO].startMovingRight()
                 else:
                     gSnakeList[PLAYER_TWO].stopMoving()
                     
             if event.key == pygame.K_d:
-                if pygame.key.getPressed()[pygame.K_a]:
+                if pygame.key.get_pressed()[pygame.K_a]:
                     gSnakeList[PLAYER_TWO].startMovingLeft()
                 else:
                     gSnakeList[PLAYER_TWO].stopMoving()
