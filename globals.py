@@ -14,5 +14,6 @@ FPS = 30
 
 SNAKE_SIZE = 16
 
-PLAYER_ONE = 0
-
+PLAYER_ONE      = 0
+PLAYER_TWO      = 1
+PLAYER_THREE    = 2
