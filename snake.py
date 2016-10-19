@@ -45,6 +45,7 @@ class Snake(pygame.sprite.Sprite):
     def setImage(self, filename = None):
         if filename != None:
             self.image = pygame.image.load(filename)
+            self.image = pygame.transform.scale(self.image, (SNAKE_SIZE, SNAKE_SIZE))
             
             self.rect = self.image.get_rect()
         
@@ -59,7 +60,7 @@ class Snake(pygame.sprite.Sprite):
         
     def move(self):
         self.angle += self.turnSpeed
-        # pygame.transform.rotate(self.image, self.angle) Figure out a way to rotate the head to self.forward's direction
+        # self.image = pygame.transform.rotate(self.image, self.angle) #Figure out a way to rotate the head to self.forward's direction
         self.tailNodes.append(TailNode(self.rect.x, self.rect.y, self.tailColor))
         self.trailGroup.add(self.tailNodes[len(self.tailNodes) - 1])
         self.setPos(int(round(self.rect.x + (self.forward['x'] * self.moveSpeed))), int(round(self.rect.y - (self.forward['y'] * self.moveSpeed))))

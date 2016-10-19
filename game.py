@@ -125,7 +125,7 @@ def gameUpdate():
             
         # Check collision between snake and snake's own body/trail
         if len(snake.tailNodes) > 1:
-            # Remove the closest nodes
+            # Remove the closest nodes (Range may need to be changed if SNAKE_SIZE is altered)
             for i in range(1, 5):
                 snake.trailGroup.remove(snake.tailNodes[len(snake.tailNodes) - i])
             # Check for collisions with the remaining nodes
