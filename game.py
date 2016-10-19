@@ -10,7 +10,9 @@ gameOver = False
 
 def main():
     init()
-    gameLoop()
+    while True:
+        gameLoop()
+        gameOverScreen()
 
 def init():
     global DISPLAYSURF, FPSCLOCK
@@ -34,6 +36,7 @@ def initGame():
     for snake in gSnakeList:
         snake.setPos(randint(5, WIDTH - 15), randint(5, HEIGHT - 5))
     
+    
 def gameRender():
     DISPLAYSURF.fill(BGCOLOR)
     
@@ -48,11 +51,11 @@ def gameUpdate():
     ## INPUT ####################################################
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            return True
+            quitGame()
             
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                return True
+                quitGame()
         
             ## PLAYER ONE ######################
             if event.key == pygame.K_LEFT:
@@ -111,7 +114,6 @@ def gameUpdate():
             snake.rect.y = HEIGHT - 1
             
         ## COLLISIONS #########################################
-            
         # Check collision between snake and other snake bodies/trails
         gSnakeGroup.remove(snake)
         for otherSnake in gSnakeGroup:
@@ -150,8 +152,53 @@ def gameLoop():
         gameOver = gameUpdate()
         gameRender()
         if gameOver:
-            break
-    quitGame()
+            return
+        
+def waitForKeyPress():
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            quitGame()
+    
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                quitGame()
+            else:
+                return True
+    return False
+        
+def drawPressAnyKeyToContinue():
+    msgFont = pygame.font.Font('freesansbold.ttf', 30)
+    msgSurf = msgFont.render('Press any key to continue', True, DARKGRAY)
+    msgRect = msgSurf.get_rect()
+    msgRect.midtop = (WIDTH /2, HEIGHT - (msgRect.height + 20))
+    DISPLAYSURF.blit(msgSurf, msgRect)
+         
+def gameOverScreen():
+    gameOverFont = pygame.font.Font('freesansbold.ttf', 150)
+    
+    gameSurf = gameOverFont.render('Game', True, DARKGRAY)
+    overSurf = gameOverFont.render('Over', True, DARKGRAY)
+  
+    gameRect = gameSurf.get_rect()
+    overRect = overSurf.get_rect()
+   
+    gameRect.midtop = (WIDTH / 2, (HEIGHT / 2) - gameRect.height)
+    overRect.midtop = (WIDTH / 2, gameRect.midbottom[1] + 20)
+    
+    drawPressAnyKeyToContinue()
+    DISPLAYSURF.blit(gameSurf, gameRect)
+    DISPLAYSURF.blit(overSurf, overRect)
+
+    pygame.display.update()
+    pygame.time.wait(500)
+    
+    # pygame.event.get()  #clear out event queue 
+    while True:
+        if waitForKeyPress():
+            return
+        
+        # Limit loops per second
+        FPSCLOCK.tick(FPS)
         
 def quitGame():
     pygame.quit()
