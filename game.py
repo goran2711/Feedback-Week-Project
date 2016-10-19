@@ -25,9 +25,10 @@ def initGame():
     
     snakeOne = Snake(BLACK)
     snakeOne.setImage(SOURCE_FOLDER + "/img/head.gif")
+    snakeTwo = Snake(RED)
     gSnakeGroup = pygame.sprite.Group()
-    gSnakeGroup.add(snakeOne)
-    gSnakeList = [snakeOne]
+    gSnakeGroup.add(snakeOne, snakeTwo)
+    gSnakeList = [snakeOne, snakeTwo]
     
     # Random spawn location
     for snake in gSnakeList:
@@ -44,6 +45,7 @@ def gameRender():
     gSnakeGroup.draw(DISPLAYSURF)
     
 def gameUpdate():
+    ## INPUT ####################################################
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             return True
@@ -52,17 +54,20 @@ def gameUpdate():
             if event.key == pygame.K_ESCAPE:
                 return True
         
+            ## PLAYER ONE ######################
             if event.key == pygame.K_LEFT:
                 gSnakeList[PLAYER_ONE].startMovingLeft()
             elif event.key == pygame.K_RIGHT:
                 gSnakeList[PLAYER_ONE].startMovingRight()
                 
-            # if event.key == pygame.K_a:
-                # gSnakeList[PLAYER_TWO].startMovingLeft()
-            # if event.key == pygame.K_d:
-                # gSnakeList[PLAYER_TWO].startMovingRight()
+            ## PLAYER TWO ######################
+            if event.key == pygame.K_a:
+                gSnakeList[PLAYER_TWO].startMovingLeft()
+            if event.key == pygame.K_d:
+                gSnakeList[PLAYER_TWO].startMovingRight()
                 
         if event.type == pygame.KEYUP:
+            ## PLAYER ONE ######################
             if event.key == pygame.K_LEFT:
                 # If they are still pressing right arrow when letting go of left arrow
                 if pygame.key.get_pressed()[pygame.K_RIGHT]:
@@ -76,10 +81,19 @@ def gameUpdate():
                 else:
                     gSnakeList[PLAYER_ONE].stopMoving()
                     
-            # if event.key == pygame.K_a:
-                # gSnakeList[PLAYER_TWO].stopMoving()
-            # if event.key == pygame.K_d:
-                # gSnakeList[PLAYER_TWO].stopMoving()
+            ## PLAYER TWO ######################
+            if event.key == pygame.K_a:
+                if pygame.key.getPressed()[pygame.K_d]:
+                    gSnakeList[PLAYER_TWO].startMovingRight()
+                else:
+                    gSnakeList[PLAYER_TWO].stopMoving()
+                    
+            if event.key == pygame.K_d:
+                if pygame.key.getPressed()[pygame.K_a]:
+                    gSnakeList[PLAYER_TWO].startMovingLeft()
+                else:
+                    gSnakeList[PLAYER_TWO].stopMoving()
+    ## END INPUT ########################################################
                 
                 
     for snake in gSnakeGroup:
@@ -95,6 +109,35 @@ def gameUpdate():
             snake.rect.y = 1
         if snake.rect.y <= 0:
             snake.rect.y = HEIGHT - 1
+            
+        ## COLLISIONS #########################################
+            
+        # Check collision between snake and other snake bodies/trails
+        gSnakeGroup.remove(snake)
+        for otherSnake in gSnakeGroup:
+            if snake.isColliding(otherSnake.trailGroup):
+                gSnakeGroup.add(snake)
+                print (str(snake.id) + " colliding with snake " + str(otherSnake.id) + " body")
+                return True
+        gSnakeGroup.add(snake)
+            
+        # Check collision between snake and snake's own body/trail
+        if len(snake.tailNodes) > 1:
+            # Remove the closest nodes
+            for i in range(1, 5):
+                snake.trailGroup.remove(snake.tailNodes[len(snake.tailNodes) - i])
+            # Check for collisions with the remaining nodes
+            if snake.isColliding(snake.trailGroup):
+                # Add the nodes back
+                for i in range(1, 5):
+                        snake.trailGroup.add(snake.tailNodes[len(snake.tailNodes) - i])
+                print (str(snake.id) + " colliding with self")
+                return True
+            # Add the nodes back
+            for i in range(1, 5):
+                    snake.trailGroup.add(snake.tailNodes[len(snake.tailNodes) - i])
+                    
+        ## END COLLISIONS ######################################
         
         
     pygame.display.update()
