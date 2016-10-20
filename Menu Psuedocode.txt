@@ -1,0 +1,74 @@
+Enumerated gamestate {Menu, Options, Game}
+int cursor = 0
+bool music = true
+
+if gamestate = Menu
+	draw background
+	draw logo
+
+	if down key is pressed
+		cursor++
+		if cursor = 3
+			cursor = 0
+	if up key is pressed
+		cursor--
+		if cursor = -1
+			cursor = 2
+
+	if cursor = 0
+		draw "Start Game" in yellow
+		draw "Options" in gray
+		draw "Quit Game" in gray
+	if cursor = 1
+		draw "Start Game" in gray
+		draw "Options" in yellow
+		draw "Quit Game" in gray
+	if cursor = 2
+		draw "Start Game" in gray
+		draw "Options" in gray
+		draw "Quit Game" in yellow
+	
+	if user presses enter
+		if cursor = 0
+			go to Game
+		if cursor = 1
+			cursor = 0
+			go to Options
+		if cursor = 2
+			exit game
+
+else if gamestate = Options
+	if down key is pressed
+		cursor++
+		if cursor = 2
+			cursor = 0
+	if up key is pressed
+		cursor--
+		if cursor = -1
+			cursor = 1
+
+	if cursor = 0
+		if music = true
+			draw "Music: On" in yellow
+		else
+			draw "Music: Off" in yellow
+		draw "Return to Menu" in gray
+	if cursor = 1
+		if music = true
+			draw "Music: On" in gray
+		else
+			draw "Music: Off" in gray
+		draw "Return to Menu" in yellow
+	
+	if user presses enter
+		if cursor = 0
+			if music = on
+				turn music off
+			else
+				turn music on
+		if cursor = 1
+			cursor = 0
+			go to Menu
+
+else if gamestate = Game
+	Play main game
