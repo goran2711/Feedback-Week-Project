@@ -7,44 +7,56 @@ from player import Player
 
 gameOver = False
 
+IMG_BG = SOURCE_FOLDER + "/img/bg.jpg"
+IMG_LOGO = SOURCE_FOLDER + "/img/logo.png"
+
 def main():
     init()
+    startScreen()
     while True:
         gameLoop()
         gameOverScreen()
 
 def init():
-    global DISPLAYSURF, FPSCLOCK, gPlayerList
+    global DISPLAYSURF, FPSCLOCK, gPlayerList, gBgImg, gBgRect
 
     pygame.init()
     pygame.mixer.init()
     pygame.mixer.music.load(SOURCE_FOLDER + "/sfx/pickup.mp3")
     FPSCLOCK = pygame.time.Clock()
     DISPLAYSURF = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption('What am I doing')
+    pygame.display.set_caption('Slithery Snake')
     
     gPlayerList = [Player(), Player()]
+    
+    gBgImg = pygame.image.load(IMG_BG)
+    gBgImg = pygame.transform.scale(gBgImg, (WIDTH, HEIGHT))
+    gBgRect = gBgImg.get_rect()
     
 def initGame():
     global gSnakeList, gSnakeGroup, gPowerupList, gPowerupGroup, gPowerupRenderGroup, gNextPowerupSpawn
     
+    # Snakes
     snakeOne = Snake(PLAYER_ONE)
     snakeTwo = Snake(PLAYER_TWO)
     gSnakeGroup = pygame.sprite.Group()
     gSnakeGroup.add(snakeOne, snakeTwo)
     gSnakeList = [snakeOne, snakeTwo]
+    
+    # Powerups
     gPowerupList = []
     gPowerupGroup = pygame.sprite.Group()
     gPowerupRenderGroup = pygame.sprite.Group()
     gNextPowerupSpawn = pygame.time.get_ticks() + POWERUP_TIMER
     
+    # Player assignment
     for i in range(len(gPlayerList)):
         gPlayerList[i].newRoundReset()
         gPlayerList[i].assignSnake(gSnakeList[i].id)
     
     # Random spawn location
     for snake in gSnakeList:
-        snake.setPos(randint(5, WIDTH - 15), randint(5, HEIGHT - 5))
+        snake.setPos(randint(SNAKE_SIZE, WIDTH - SNAKE_SIZE), randint(SNAKE_SIZE, HEIGHT - SNAKE_SIZE))
         
         
 def spawnPowerup():
@@ -59,7 +71,7 @@ def spawnPowerup():
         gNextPowerupSpawn = currentTime + randint(POWERUP_TIMER - randint(0, 3), POWERUP_TIMER + randint(0, 3))
 
 def gameRender():
-    DISPLAYSURF.fill(BGCOLOR)
+    DISPLAYSURF.blit(gBgImg, gBgRect)
     
     # Draw tails
     for snake in gSnakeGroup:
@@ -152,7 +164,7 @@ def gameUpdate():
         # Check collision between snake and snake's own body/trail
         if len(snake.tailNodes) > 5:
             # Has to be dynamic so that snake doesn't collide with itself when slowed by powerup
-            nodesToRemove = int(10 + (10/snake.moveSpeed))
+            nodesToRemove = int(10 + (15/snake.moveSpeed))
             
             # Remove the closest nodes (Range may need to be changed if SNAKE_SIZE is altered)
             for i in range(1, nodesToRemove):
@@ -218,14 +230,14 @@ def drawPressAnyKeyToContinue():
     
 def drawScore():
     scoreFont = pygame.font.Font('freesansbold.ttf', 20)
-    scoreTitleSurf = scoreFont.render('Scores:', True, DARKGRAY)
+    scoreTitleSurf = scoreFont.render('Scores:', True, WHITE)
     scoreTitleRect = scoreTitleSurf.get_rect()
     scoreTitleRect.topleft = (10, 10)
     DISPLAYSURF.blit(scoreTitleSurf, scoreTitleRect)
     
     i = 1
     for player in gPlayerList:
-        newScoreSurf = scoreFont.render('Player ' + str(player.player_id) + ': ' + str(player.score), True, DARKGRAY)
+        newScoreSurf = scoreFont.render('Player ' + str(player.player_id) + ': ' + str(player.score), True, WHITE)
         newScoreRect = newScoreSurf.get_rect()
         newScoreRect.topleft = (10, 10 + (newScoreRect.height * i))
         DISPLAYSURF.blit(newScoreSurf, newScoreRect)
@@ -236,8 +248,25 @@ def drawPlayerXWins(player):
     msg = "Player " + str(player.player_id) + " wins!"
     msgSurf = msgFont.render(msg, True, DARKGRAY)
     msgRect = msgSurf.get_rect()
-    msgRect.midtop = (WIDTH/2, msgRect.height + 20)
+    msgRect.midtop = (WIDTH/2, msgRect.height + 10)
     DISPLAYSURF.blit(msgSurf, msgRect)
+         
+def startScreen():
+    logoSurf = pygame.image.load(IMG_LOGO)
+    logoRect = logoSurf.get_rect()
+    logoRect.center = (WIDTH/2, HEIGHT/2)
+    
+    DISPLAYSURF.blit(gBgImg, gBgRect)
+    DISPLAYSURF.blit(logoSurf, logoRect)
+    drawPressAnyKeyToContinue()
+    
+    pygame.display.update()
+    
+    while True:
+        if waitForKeyPress():
+            return
+            
+    FPSCLOCK.tick(FPS)
          
 def gameOverScreen():
     gameOverFont = pygame.font.Font('freesansbold.ttf', 150)

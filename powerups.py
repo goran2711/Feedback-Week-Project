@@ -30,8 +30,8 @@ class Powerup(pygame.sprite.Sprite):
         self.image = pygame.image.load(self.sprite)
         self.image = pygame.transform.scale(self.image, (PWIDTH, PHEIGHT))
         self.rect = self.image.get_rect()
-        self.rect.x = randint(0, WIDTH)
-        self.rect.y = randint(0, HEIGHT)
+        self.rect.x = randint(0, WIDTH - PWIDTH / 2)
+        self.rect.y = randint(0, HEIGHT - PHEIGHT / 2)
 
     def getAbility(self):
         return self.ability
