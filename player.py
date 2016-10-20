@@ -6,13 +6,13 @@ class Player():
         self.player_id = Player.numPlayers
         Player.numPlayers += 1
         self.score = 0
-        self.isLoser = False
+        self.isWinner = False
         
     def assignSnake(self, snake_id):
         self.snake_id = snake_id
         
-    def lost(self):
-        self.isLoser = True
+    def won(self):
+        self.isWinner = True
         
     def newRoundReset(self):
-        self.isLoser = False
+        self.isWinner = False

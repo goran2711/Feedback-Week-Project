@@ -24,10 +24,7 @@ def init():
     DISPLAYSURF = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption('What am I doing')
     
-    playerOne = Player()
-    playerTwo = Player()
-    
-    gPlayerList = [playerOne, playerTwo]
+    gPlayerList = [Player(), Player()]
     
 def initGame():
     global gSnakeList, gSnakeGroup, gPowerupList, gPowerupGroup, gNextPowerupSpawn
@@ -138,7 +135,7 @@ def gameUpdate():
                 for player in gPlayerList:
                     if player.snake_id == otherSnake.id:
                         player.score += 1
-                        player.lost()
+                        player.won()
                 gSnakeGroup.add(snake)
                 print (str(snake.id) + " colliding with snake " + str(otherSnake.id) + " body")
                 return True
@@ -167,7 +164,7 @@ def gameUpdate():
                 for player in gPlayerList:
                     if player.snake_id != snake.id:
                         player.score += 1
-                        player.lost()
+                        player.won()
                 # Add the nodes back
                 for i in range(1, 10):
                         snake.trailGroup.add(snake.tailNodes[len(snake.tailNodes) - i])
@@ -227,22 +224,17 @@ def drawScore():
     scoreTitleRect.topleft = (10, 10)
     DISPLAYSURF.blit(scoreTitleSurf, scoreTitleRect)
     
-    scoreSurfList = []
-    scoreRectList = []
-    
     i = 1
     for player in gPlayerList:
         newScoreSurf = scoreFont.render('Player ' + str(player.player_id) + ': ' + str(player.score), True, DARKGRAY)
-        scoreSurfList.append(newScoreSurf)
         newScoreRect = newScoreSurf.get_rect()
         newScoreRect.topleft = (10, 10 + (newScoreRect.height * i))
-        scoreRectList.append(newScoreRect)
         DISPLAYSURF.blit(newScoreSurf, newScoreRect)
         i += 1
     
-def drawPlayerXLoses(player):
+def drawPlayerXWins(player):
     msgFont = pygame.font.Font('freesansbold.ttf', 30)
-    msg = "Player " + str(player.player_id) + " loses!"
+    msg = "Player " + str(player.player_id) + " wins!"
     msgSurf = msgFont.render(msg, True, DARKGRAY)
     msgRect = msgSurf.get_rect()
     msgRect.midtop = (WIDTH/2, msgRect.height + 20)
@@ -261,8 +253,8 @@ def gameOverScreen():
     overRect.midtop = (WIDTH / 2, gameRect.midbottom[1] + 20)
     
     for player in gPlayerList:
-        if player.isLoser == True:
-            drawPlayerXLoses(player)
+        if player.isWinner == True:
+            drawPlayerXWins(player)
     
     drawPressAnyKeyToContinue()
     DISPLAYSURF.blit(gameSurf, gameRect)
