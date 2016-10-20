@@ -20,6 +20,8 @@ def init():
     global DISPLAYSURF, FPSCLOCK, gPlayerList
 
     pygame.init()
+    pygame.mixer.init()
+    pygame.mixer.music.load("sfx/pickup.mp3")
     FPSCLOCK = pygame.time.Clock()
     DISPLAYSURF = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption('What am I doing')
@@ -150,6 +152,7 @@ def gameUpdate():
                         snake.powerup(ability, True)        # Functions for both snakes as some pickups effect the other player
                         otherSnake.powerup(ability, False)  # Boolean variables confirm which snake has collided with the pickup and they can act accordingly
                         gPowerupList[powerup].die()
+                        pygame.mixer.music.play()
                     gPowerupGroup.remove(gPowerupList[powerup])
                 
         gSnakeGroup.add(snake)
