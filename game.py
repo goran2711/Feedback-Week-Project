@@ -18,7 +18,7 @@ def init():
 
     pygame.init()
     pygame.mixer.init()
-    pygame.mixer.music.load("sfx/pickup.mp3")
+    pygame.mixer.music.load(SOURCE_FOLDER + "/sfx/pickup.mp3")
     FPSCLOCK = pygame.time.Clock()
     DISPLAYSURF = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption('What am I doing')
