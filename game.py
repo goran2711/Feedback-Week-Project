@@ -28,9 +28,10 @@ def init():
 def initGame():
     global gSnakeList, gSnakeGroup, gPowerupList, gPowerupGroup, gPowerupRenderGroup, gNextPowerupSpawn
     
-    snakeOne = Snake(BLACK, GREEN)
-    snakeOne.setImage(SOURCE_FOLDER + "/img/head.gif")
-    snakeTwo = Snake(RED, RED)
+    snakeOne = Snake(PLAYER_ONE)
+    snakeOne.setImage(SOURCE_FOLDER + "/img/head1.png")
+    snakeTwo = Snake(PLAYER_TWO)
+    snakeTwo.setImage(SOURCE_FOLDER + "/img/head2.png")
     gSnakeGroup = pygame.sprite.Group()
     gSnakeGroup.add(snakeOne, snakeTwo)
     gSnakeList = [snakeOne, snakeTwo]
@@ -94,7 +95,7 @@ def gameUpdate():
     elif keys[pygame.K_LEFT]:
         gSnakeList[PLAYER_ONE].startMovingLeft()
     else:
-        gSnakeList[PLAYER_ONE].stopMoving()
+        gSnakeList[PLAYER_ONE].stopTurning()
 
     ## PLAYER TWO ###############################################
     if keys[pygame.K_d]:
@@ -102,7 +103,7 @@ def gameUpdate():
     elif keys[pygame.K_a]:
         gSnakeList[PLAYER_TWO].startMovingLeft()
     else:
-        gSnakeList[PLAYER_TWO].stopMoving()
+        gSnakeList[PLAYER_TWO].stopTurning()
         
     ## END INPUT ################################################
                 
@@ -152,8 +153,11 @@ def gameUpdate():
             
         # Check collision between snake and snake's own body/trail
         if len(snake.tailNodes) > 5:
+            # Has to be dynamic so that snake doesn't collide with itself when slowed by powerup
+            nodesToRemove = int(10 + (10/snake.moveSpeed))
+            
             # Remove the closest nodes (Range may need to be changed if SNAKE_SIZE is altered)
-            for i in range(1, 10):
+            for i in range(1, nodesToRemove):
                 snake.trailGroup.remove(snake.tailNodes[len(snake.tailNodes) - i])
             # Check for collisions with the remaining nodes
             if snake.isColliding(snake.trailGroup):
@@ -163,12 +167,12 @@ def gameUpdate():
                         player.score += 1
                         player.won()
                 # Add the nodes back
-                for i in range(1, 10):
+                for i in range(1, nodesToRemove):
                         snake.trailGroup.add(snake.tailNodes[len(snake.tailNodes) - i])
                 print (str(snake.id) + " colliding with self")
                 return True
             # Add the nodes back
-            for i in range(1, 10):
+            for i in range(1, nodesToRemove):
                     snake.trailGroup.add(snake.tailNodes[len(snake.tailNodes) - i])
                     
         ## END COLLISIONS ######################################

@@ -2,8 +2,12 @@ import pygame
 from random import randint
 from globals import *
 
-PWIDTH = 10
-PHEIGHT = 10
+PWIDTH = 40
+PHEIGHT = 40
+
+POWERUP_NOTRAIL = SOURCE_FOLDER + "/img/powerup_notrail.png"
+POWERUP_SPEEDUP = SOURCE_FOLDER + "/img/powerup_speedup.png"
+POWERUP_SLOWDOWN = SOURCE_FOLDER + "/img/powerup_slowdown.png"
 
 class Powerup(pygame.sprite.Sprite):
     def __init__(self):
@@ -15,16 +19,16 @@ class Powerup(pygame.sprite.Sprite):
         rand = randint(0, 2)
         if rand == 0:
             self.ability = "SPEED+"
-            self.color = GREEN
+            self.sprite = POWERUP_SPEEDUP
         elif rand == 1:
             self.ability = "SPEED-"
-            self.color = RED
+            self.sprite = POWERUP_SLOWDOWN
         elif rand == 2:
             self.ability = "NOTRAIL"
-            self.color = DARKGRAY
+            self.sprite = POWERUP_NOTRAIL
 
-        self.image = pygame.Surface([PWIDTH, PHEIGHT])
-        self.image.fill(self.color)
+        self.image = pygame.image.load(self.sprite)
+        self.image = pygame.transform.scale(self.image, (PWIDTH, PHEIGHT))
         self.rect = self.image.get_rect()
         self.rect.x = randint(0, WIDTH)
         self.rect.y = randint(0, HEIGHT)
