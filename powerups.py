@@ -1,4 +1,4 @@
-import pygame, time
+import pygame
 from random import randint
 from globals import *
 

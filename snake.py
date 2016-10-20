@@ -1,4 +1,5 @@
-import pygame, math
+import pygame
+from math import cos, sin, pi
 from random import randint
 from globals import *
 
@@ -77,8 +78,8 @@ class Snake(pygame.sprite.Sprite):
         self.setPos(int(round(self.rect.x + (self.forward['x'] * self.moveSpeed))), int(round(self.rect.y - (self.forward['y'] * self.moveSpeed))))
         
     def update(self):
-        self.forward['x'] = math.cos(self.angle*3.1415 / 180)
-        self.forward['y'] = math.sin(self.angle*3.1415 / 180)
+        self.forward['x'] = cos(self.angle * pi / 180)
+        self.forward['y'] = sin(self.angle * pi / 180)
         
         if self.angle >= 359:
             self.angle = 0
@@ -95,7 +96,7 @@ class Snake(pygame.sprite.Sprite):
             else:
                 if currentTime >= self.gapTimeExpire:
                     self.layingTrail = True
-                    self.nextGapTime = currentTime + randint(2000, 5000) # Random hardcoded numbers (time in ms)
+                    self.nextGapTime = currentTime + randint(1500, 3000) # Random hardcoded numbers (time in ms)
            
     def powerup(self, ability, collided):
         self.currentPowerupAbility = ability

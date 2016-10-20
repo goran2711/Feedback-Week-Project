@@ -1,4 +1,4 @@
-import pygame, math
+import pygame
 from os import path
 from random import randint
 from globals import *
@@ -37,7 +37,7 @@ def initGame():
     gSnakeList = [snakeOne, snakeTwo]
     gPowerupList = []
     gPowerupGroup = pygame.sprite.Group()
-    gNextPowerupSpawn = POWERUP_TIMER
+    gNextPowerupSpawn = pygame.time.get_ticks() + POWERUP_TIMER
     
     for i in range(len(gPlayerList)):
         gPlayerList[i].newRoundReset()
@@ -46,6 +46,7 @@ def initGame():
     # Random spawn location
     for snake in gSnakeList:
         snake.setPos(randint(5, WIDTH - 15), randint(5, HEIGHT - 5))
+        
         
 def spawnPowerup():
     global gNextPowerupSpawn # UnboundLocalError without this. Don't know why
@@ -266,8 +267,8 @@ def gameOverScreen():
 
     pygame.display.update()
     pygame.time.wait(500)
-    
-    # pygame.event.get()  #clear out event queue 
+     
+    pygame.event.get() # Not sure if this makes a difference
     while True:
         if waitForKeyPress():
             return
