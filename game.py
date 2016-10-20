@@ -29,9 +29,7 @@ def initGame():
     global gSnakeList, gSnakeGroup, gPowerupList, gPowerupGroup, gPowerupRenderGroup, gNextPowerupSpawn
     
     snakeOne = Snake(PLAYER_ONE)
-    snakeOne.setImage(SOURCE_FOLDER + "/img/head1.png")
     snakeTwo = Snake(PLAYER_TWO)
-    snakeTwo.setImage(SOURCE_FOLDER + "/img/head2.png")
     gSnakeGroup = pygame.sprite.Group()
     gSnakeGroup.add(snakeOne, snakeTwo)
     gSnakeList = [snakeOne, snakeTwo]

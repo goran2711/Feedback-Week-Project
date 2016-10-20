@@ -8,6 +8,7 @@ GAP_TIME = 500 # Time in milliseconds
 IMG_TAIL = [SOURCE_FOLDER + "/img/tail1.png", SOURCE_FOLDER + "/img/tail2.png"]
 IMG_BODY = [(SOURCE_FOLDER + "/img/body1_1.png", SOURCE_FOLDER + "/img/body1_2.png"),
             (SOURCE_FOLDER + "/img/body2_1.png", SOURCE_FOLDER + "/img/body2_2.png")]
+IMG_HEAD = [SOURCE_FOLDER + "/img/head1.png", SOURCE_FOLDER + "/img/head2.png"]
 
 class TailNode(pygame.sprite.Sprite):
     def __init__(self, x, y, image = None, angle = None, width = SNAKE_SIZE, height = SNAKE_SIZE):
@@ -28,7 +29,7 @@ class Snake(pygame.sprite.Sprite):
     # Class variable. Kind of like static variables in C++
     snake_id = 0
 
-    def __init__(self, owner_id, color = RED, tailColor = RED, width = SNAKE_SIZE, height = SNAKE_SIZE):
+    def __init__(self, owner_id, width = SNAKE_SIZE, height = SNAKE_SIZE):
         super(Snake, self).__init__()
         
         self.owner_id = owner_id
@@ -36,12 +37,7 @@ class Snake(pygame.sprite.Sprite):
         self.id = Snake.snake_id
         Snake.snake_id += 1
         
-        self.imageMaster = None
-        self.image = pygame.Surface((width, height))
-        
-        self.image.fill(color)
-        
-        self.rect = self.image.get_rect()
+        self.setImage(IMG_HEAD[self.owner_id])
         
         self.forward = {'x':1,
                         'y':0}
@@ -49,7 +45,6 @@ class Snake(pygame.sprite.Sprite):
         self.turnSpeed = DEFAULT_TURNSPEED
         self.moveSpeed = DEFAULT_MOVESPEED
         
-        self.tailColor = tailColor
         self.tailNodes = []
         self.trailGroup = pygame.sprite.Group()
 
@@ -86,7 +81,7 @@ class Snake(pygame.sprite.Sprite):
         
     def move(self):
         self.angle += self.turnSpeed
-        print(str(self.snake_id))
+        
         if self.imageMaster != None:
             oldCenter = self.rect.center
             self.image = pygame.transform.rotate(self.imageMaster, self.angle) #Figure out a way to rotate the head to self.forward's direction
