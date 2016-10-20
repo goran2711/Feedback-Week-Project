@@ -35,6 +35,10 @@ class Snake(pygame.sprite.Sprite):
         self.tailColor = tailColor
         self.tailNodes = []
         self.trailGroup = pygame.sprite.Group()
+
+        self.layingTrail = True
+        self.hasPowerup = False
+        self.powerupExpire = 0
         
     # Currently ALWAYS collides with the tail because they will usually overlap
     def isColliding(self, otherGroup):
@@ -61,8 +65,9 @@ class Snake(pygame.sprite.Sprite):
     def move(self):
         self.angle += self.turnSpeed
         # self.image = pygame.transform.rotate(self.image, self.angle) #Figure out a way to rotate the head to self.forward's direction
-        self.tailNodes.append(TailNode(self.rect.x, self.rect.y, self.tailColor))
-        self.trailGroup.add(self.tailNodes[len(self.tailNodes) - 1])
+        if self.layingTrail == True:
+            self.tailNodes.append(TailNode(self.rect.x, self.rect.y, self.tailColor))
+            self.trailGroup.add(self.tailNodes[len(self.tailNodes) - 1])
         self.setPos(int(round(self.rect.x + (self.forward['x'] * self.moveSpeed))), int(round(self.rect.y - (self.forward['y'] * self.moveSpeed))))
         
     def update(self):
@@ -74,6 +79,22 @@ class Snake(pygame.sprite.Sprite):
         elif self.angle <= 0:
             self.angle = 359
            
+    def powerup(self, ability, collided):
+        if collided == True:
+            self.hasPowerup = True
+            self.powerupExire = pygame.time.get_ticks() + POWERUPLIFESPAN
+            if ability == "SPEED+":
+                self.moveSpeed = 8
+        else:
+            if ability == "SPEED-":
+                self.moveSpeed = 3
+            elif ability == "NOTRAIL":
+                self.layingTrail = False
+
+    def reset(self):
+        self.moveSpeed = 5
+        self.layingTrail = True
+        self.hasPowerup = False
         
     def setPos(self, x, y):
         self.rect.x = x
