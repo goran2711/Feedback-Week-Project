@@ -4,6 +4,7 @@ from random import randint
 from globals import *
 from snake import Snake
 from powerups import Powerup
+from player import Player
 
 SOURCE_FOLDER = path.dirname(path.abspath(__file__))
 
@@ -16,12 +17,17 @@ def main():
         gameOverScreen()
 
 def init():
-    global DISPLAYSURF, FPSCLOCK
+    global DISPLAYSURF, FPSCLOCK, gPlayerList
 
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
     DISPLAYSURF = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption('What am I doing')
+    
+    playerOne = Player()
+    playerTwo = Player()
+    
+    gPlayerList = [playerOne, playerTwo]
     
 def initGame():
     global gSnakeList, gSnakeGroup, gPowerupList, gPowerupGroup, gNextPowerupSpawn
@@ -36,18 +42,24 @@ def initGame():
     gPowerupGroup = pygame.sprite.Group()
     gNextPowerupSpawn = POWERUP_TIMER
     
+    for i in range(len(gPlayerList)):
+        gPlayerList[i].newRoundReset()
+        gPlayerList[i].assignSnake(gSnakeList[i].id)
+    
     # Random spawn location
     for snake in gSnakeList:
         snake.setPos(randint(5, WIDTH - 15), randint(5, HEIGHT - 5))
         
 def spawnPowerup():
     global gNextPowerupSpawn # UnboundLocalError without this. Don't know why
+    
+    currentTime = pygame.time.get_ticks()
 
-    if pygame.time.get_ticks() >= gNextPowerupSpawn:
+    if currentTime >= gNextPowerupSpawn:
         newPowerup = Powerup()
         gPowerupList.append(newPowerup)
         gPowerupGroup.add(newPowerup)
-        gNextPowerupSpawn = pygame.time.get_ticks() + randint(POWERUP_TIMER - randint(0, 3), POWERUP_TIMER + randint(0, 3))
+        gNextPowerupSpawn = currentTime + randint(POWERUP_TIMER - randint(0, 3), POWERUP_TIMER + randint(0, 3))
 
 def gameRender():
     DISPLAYSURF.fill(BGCOLOR)
@@ -68,6 +80,8 @@ def gameRender():
     
     for powerup in range(len(gPowerupList)):
          gPowerupGroup.remove(gPowerupList[powerup])
+         
+    drawScore()
     
 def gameUpdate():
     ## INPUT ####################################################
@@ -120,6 +134,11 @@ def gameUpdate():
         gSnakeGroup.remove(snake)
         for otherSnake in gSnakeGroup:
             if snake.isColliding(otherSnake.trailGroup):
+                # Increment other player's score
+                for player in gPlayerList:
+                    if player.snake_id == otherSnake.id:
+                        player.score += 1
+                        player.lost()
                 gSnakeGroup.add(snake)
                 print (str(snake.id) + " colliding with snake " + str(otherSnake.id) + " body")
                 return True
@@ -144,6 +163,11 @@ def gameUpdate():
                 snake.trailGroup.remove(snake.tailNodes[len(snake.tailNodes) - i])
             # Check for collisions with the remaining nodes
             if snake.isColliding(snake.trailGroup):
+                # Increment other player's score
+                for player in gPlayerList:
+                    if player.snake_id != snake.id:
+                        player.score += 1
+                        player.lost()
                 # Add the nodes back
                 for i in range(1, 10):
                         snake.trailGroup.add(snake.tailNodes[len(snake.tailNodes) - i])
@@ -195,6 +219,34 @@ def drawPressAnyKeyToContinue():
     msgRect = msgSurf.get_rect()
     msgRect.midtop = (WIDTH /2, HEIGHT - (msgRect.height + 20))
     DISPLAYSURF.blit(msgSurf, msgRect)
+    
+def drawScore():
+    scoreFont = pygame.font.Font('freesansbold.ttf', 20)
+    scoreTitleSurf = scoreFont.render('Scores:', True, DARKGRAY)
+    scoreTitleRect = scoreTitleSurf.get_rect()
+    scoreTitleRect.topleft = (10, 10)
+    DISPLAYSURF.blit(scoreTitleSurf, scoreTitleRect)
+    
+    scoreSurfList = []
+    scoreRectList = []
+    
+    i = 1
+    for player in gPlayerList:
+        newScoreSurf = scoreFont.render('Player ' + str(player.player_id) + ': ' + str(player.score), True, DARKGRAY)
+        scoreSurfList.append(newScoreSurf)
+        newScoreRect = newScoreSurf.get_rect()
+        newScoreRect.topleft = (10, 10 + (newScoreRect.height * i))
+        scoreRectList.append(newScoreRect)
+        DISPLAYSURF.blit(newScoreSurf, newScoreRect)
+        i += 1
+    
+def drawPlayerXLoses(player):
+    msgFont = pygame.font.Font('freesansbold.ttf', 30)
+    msg = "Player " + str(player.player_id) + " loses!"
+    msgSurf = msgFont.render(msg, True, DARKGRAY)
+    msgRect = msgSurf.get_rect()
+    msgRect.midtop = (WIDTH/2, msgRect.height + 20)
+    DISPLAYSURF.blit(msgSurf, msgRect)
          
 def gameOverScreen():
     gameOverFont = pygame.font.Font('freesansbold.ttf', 150)
@@ -208,9 +260,17 @@ def gameOverScreen():
     gameRect.midtop = (WIDTH / 2, (HEIGHT / 2) - gameRect.height)
     overRect.midtop = (WIDTH / 2, gameRect.midbottom[1] + 20)
     
+    for player in gPlayerList:
+        if player.isLoser == True:
+            drawPlayerXLoses(player)
+    
     drawPressAnyKeyToContinue()
     DISPLAYSURF.blit(gameSurf, gameRect)
     DISPLAYSURF.blit(overSurf, overRect)
+    
+    # Debug
+    print("P1 score: " + str(gPlayerList[PLAYER_ONE].score))
+    print("P2 score: " + str(gPlayerList[PLAYER_TWO].score))
 
     pygame.display.update()
     pygame.time.wait(500)

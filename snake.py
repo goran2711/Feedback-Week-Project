@@ -1,5 +1,8 @@
 import pygame, math
+from random import randint
 from globals import *
+
+GAP_TIME = 500 # Time in milliseconds
 
 class TailNode(pygame.sprite.Sprite):
     def __init__(self, x, y, color = BLACK, width = SNAKE_SIZE, height = SNAKE_SIZE):
@@ -39,6 +42,9 @@ class Snake(pygame.sprite.Sprite):
         self.layingTrail = True
         self.hasPowerup = False
         self.powerupExpire = 0
+        self.currentPowerupAbility = None
+        
+        self.nextGapTime = 0
         
     # Currently ALWAYS collides with the tail because they will usually overlap
     def isColliding(self, otherGroup):
@@ -78,8 +84,21 @@ class Snake(pygame.sprite.Sprite):
             self.angle = 0
         elif self.angle <= 0:
             self.angle = 359
+            
+        currentTime = pygame.time.get_ticks()
+        
+        if self.currentPowerupAbility != "NOTRAIL":
+            if self.layingTrail == True:
+                if currentTime >= self.nextGapTime:
+                    self.layingTrail = False
+                    self.gapTimeExpire = currentTime + GAP_TIME
+            else:
+                if currentTime >= self.gapTimeExpire:
+                    self.layingTrail = True
+                    self.nextGapTime = currentTime + randint(2000, 5000) # Random hardcoded numbers (time in ms)
            
     def powerup(self, ability, collided):
+        self.currentPowerupAbility = ability
         if collided == True:
             self.hasPowerup = True
             self.powerupExire = pygame.time.get_ticks() + POWERUPLIFESPAN
@@ -95,6 +114,7 @@ class Snake(pygame.sprite.Sprite):
         self.moveSpeed = 5
         self.layingTrail = True
         self.hasPowerup = False
+        self.currentPowerupAbility = None
         
     def setPos(self, x, y):
         self.rect.x = x
