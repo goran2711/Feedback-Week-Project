@@ -29,7 +29,7 @@ def init():
     gPlayerList = [Player(), Player()]
     
 def initGame():
-    global gSnakeList, gSnakeGroup, gPowerupList, gPowerupGroup, gNextPowerupSpawn
+    global gSnakeList, gSnakeGroup, gPowerupList, gPowerupGroup, gPowerupRenderGroup, gNextPowerupSpawn
     
     snakeOne = Snake(BLACK, GREEN)
     snakeOne.setImage(SOURCE_FOLDER + "/img/head.gif")
@@ -39,6 +39,7 @@ def initGame():
     gSnakeList = [snakeOne, snakeTwo]
     gPowerupList = []
     gPowerupGroup = pygame.sprite.Group()
+    gPowerupRenderGroup = pygame.sprite.Group()
     gNextPowerupSpawn = pygame.time.get_ticks() + POWERUP_TIMER
     
     for i in range(len(gPlayerList)):
@@ -58,7 +59,7 @@ def spawnPowerup():
     if currentTime >= gNextPowerupSpawn:
         newPowerup = Powerup()
         gPowerupList.append(newPowerup)
-        gPowerupGroup.add(newPowerup)
+        gPowerupRenderGroup.add(newPowerup)
         gNextPowerupSpawn = currentTime + randint(POWERUP_TIMER - randint(0, 3), POWERUP_TIMER + randint(0, 3))
 
 def gameRender():
@@ -71,16 +72,10 @@ def gameRender():
     # Draw heads
     gSnakeGroup.draw(DISPLAYSURF)
 
-    # PowerupGroup is empty for collision detection
-    for powerup in range(len(gPowerupList)):
-        if gPowerupList[powerup].isAlive():
-            gPowerupGroup.add(gPowerupList[powerup])
+    # Draw powerups
+    gPowerupRenderGroup.draw(DISPLAYSURF)
 
-    gPowerupGroup.draw(DISPLAYSURF)
-    
-    for powerup in range(len(gPowerupList)):
-         gPowerupGroup.remove(gPowerupList[powerup])
-         
+    # Draw score
     drawScore()
     
 def gameUpdate():
@@ -152,6 +147,7 @@ def gameUpdate():
                         snake.powerup(ability, True)        # Functions for both snakes as some pickups effect the other player
                         otherSnake.powerup(ability, False)  # Boolean variables confirm which snake has collided with the pickup and they can act accordingly
                         gPowerupList[powerup].die()
+                        gPowerupRenderGroup.remove(gPowerupList[powerup])
                         pygame.mixer.music.play()
                     gPowerupGroup.remove(gPowerupList[powerup])
                 
