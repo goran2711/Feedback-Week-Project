@@ -1,3 +1,4 @@
+from os import path
 #             R    G    B
 WHITE     = (255, 255, 255)
 BLACK     = (  0,   0,   0)
@@ -7,12 +8,17 @@ DARKGREEN = (  0, 155,   0)
 DARKGRAY  = ( 40,  40,  40)
 BGCOLOR = WHITE
 
+SOURCE_FOLDER = path.dirname(path.abspath(__file__))
+
 WIDTH = 1280
 HEIGHT = 720
 
 FPS = 30
 
-SNAKE_SIZE = 16
+SNAKE_SIZE = 12
+
+DEFAULT_MOVESPEED = 5
+DEFAULT_TURNSPEED = 10
 
 PLAYER_ONE      = 0
 PLAYER_TWO      = 1

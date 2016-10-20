@@ -1,12 +1,9 @@
 import pygame
-from os import path
 from random import randint
 from globals import *
 from snake import Snake
 from powerups import Powerup
 from player import Player
-
-SOURCE_FOLDER = path.dirname(path.abspath(__file__))
 
 gameOver = False
 

@@ -24,6 +24,7 @@ class Snake(pygame.sprite.Sprite):
         self.id = Snake.snake_id
         Snake.snake_id += 1
         
+        self.imageMaster = None
         self.image = pygame.Surface((width, height))
         
         self.image.fill(color)
@@ -33,8 +34,8 @@ class Snake(pygame.sprite.Sprite):
         self.forward = {'x':1,
                         'y':0}
         self.angle = 0
-        self.turnSpeed = 0
-        self.moveSpeed = 5
+        self.turnSpeed = DEFAULT_TURNSPEED
+        self.moveSpeed = DEFAULT_MOVESPEED
         
         self.tailColor = tailColor
         self.tailNodes = []
@@ -55,23 +56,30 @@ class Snake(pygame.sprite.Sprite):
         
     def setImage(self, filename = None):
         if filename != None:
-            self.image = pygame.image.load(filename)
+            self.imageMaster = pygame.image.load(filename)
+            self.image = self.imageMaster
             self.image = pygame.transform.scale(self.image, (SNAKE_SIZE, SNAKE_SIZE))
             
             self.rect = self.image.get_rect()
         
     def startMovingRight(self):
-        self.turnSpeed = -10
+        self.turnSpeed = -DEFAULT_TURNSPEED
         
     def startMovingLeft(self):
-        self.turnSpeed = 10
+        self.turnSpeed = DEFAULT_TURNSPEED
         
     def stopMoving(self):
         self.turnSpeed = 0
         
     def move(self):
         self.angle += self.turnSpeed
-        # self.image = pygame.transform.rotate(self.image, self.angle) #Figure out a way to rotate the head to self.forward's direction
+        
+        if self.imageMaster != None:
+            oldCenter = self.rect.center
+            self.image = pygame.transform.rotate(self.imageMaster, self.angle) #Figure out a way to rotate the head to self.forward's direction
+            self.rect = self.image.get_rect()
+            self.rect.center = oldCenter
+        
         if self.layingTrail == True:
             self.tailNodes.append(TailNode(self.rect.x, self.rect.y, self.tailColor))
             self.trailGroup.add(self.tailNodes[len(self.tailNodes) - 1])
@@ -104,15 +112,15 @@ class Snake(pygame.sprite.Sprite):
             self.hasPowerup = True
             self.powerupExire = pygame.time.get_ticks() + POWERUPLIFESPAN
             if ability == "SPEED+":
-                self.moveSpeed = 8
+                self.moveSpeed = DEFAULT_MOVESPEED * 1.5
         else:
             if ability == "SPEED-":
-                self.moveSpeed = 3
+                self.moveSpeed = DEFAULT_MOVESPEED * 0.5
             elif ability == "NOTRAIL":
                 self.layingTrail = False
 
     def reset(self):
-        self.moveSpeed = 5
+        self.moveSpeed = DEFAULT_MOVESPEED
         self.layingTrail = True
         self.hasPowerup = False
         self.currentPowerupAbility = None
