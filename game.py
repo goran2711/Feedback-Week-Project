@@ -1,6 +1,6 @@
 import pygame
 from random import randint
-from globals import *
+from common import *
 from snake import Snake
 from powerups import Powerup
 from player import Player

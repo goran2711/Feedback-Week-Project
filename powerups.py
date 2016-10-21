@@ -1,6 +1,6 @@
 import pygame
 from random import randint
-from globals import *
+from common import *
 
 PWIDTH = 40
 PHEIGHT = 40

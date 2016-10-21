@@ -1,7 +1,7 @@
 import pygame
 from math import cos, sin, pi
 from random import randint
-from globals import *
+from common import *
 
 GAP_TIME = 500 # Time in milliseconds
 
